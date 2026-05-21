@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔮 RISE의 신묘한 타로상점</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&family=Cinzel:wght@400;600&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0814;--surface:#12102a;--surface2:#1a1640;
+  --gold:#d4a843;--gold2:#f0cc7a;--gold-light:#f8e8b8;
+  --purple:#7c5ccf;--purple2:#c9a8f5;
+  --text:#f0eaf8;--text-muted:#9e93b8;
+  --border:rgba(212,168,67,0.2);--border2:rgba(212,168,67,0.4);
+  --pborder:rgba(155,127,232,0.25);--pborder2:rgba(155,127,232,0.45);
+  --radius:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 20% 10%,rgba(60,30,130,.25) 0%,transparent 70%),radial-gradient(ellipse 50% 35% at 80% 80%,rgba(140,80,20,.15) 0%,transparent 70%);pointer-events:none;z-index:0;}
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.star{position:absolute;width:2px;height:2px;background:white;border-radius:50%;animation:twinkle var(--d,3s) var(--delay,0s) infinite alternate;}
+@keyframes twinkle{from{opacity:.05}to{opacity:.7}}
+.container{position:relative;z-index:1;width:100%;max-width:560px;padding:2.5rem 1.5rem 4rem;}
+
+.header{text-align:center;margin-bottom:2rem;}
+.orb{font-size:52px;display:block;animation:float 4s ease-in-out infinite;margin-bottom:8px;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.rise-logo{font-family:'Cinzel',serif;font-size:30px;font-weight:600;color:var(--gold);letter-spacing:.15em;margin-bottom:2px;}
+.rise-logo span{color:var(--gold2);}
+.header-sub{font-size:11px;letter-spacing:.18em;color:var(--text-muted);text-transform:uppercase;margin-bottom:1rem;}
+.header h1{font-family:'Noto Serif KR',serif;font-size:15px;font-weight:400;color:var(--gold-light);letter-spacing:.05em;line-height:1.8;}
+
+/* STEP BAR — 4 steps */
+.step-wrap{margin-bottom:2rem;}
+.step-bar{display:flex;align-items:center;justify-content:center;}
+.step-dot{width:28px;height:28px;border-radius:50%;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-muted);transition:all .3s;flex-shrink:0;}
+.step-dot.active{background:var(--gold);border-color:var(--gold);color:#0a0814;font-weight:600;}
+.step-dot.active.p{background:var(--purple);border-color:var(--purple);color:#fff;}
+.step-dot.done{background:rgba(212,168,67,.2);border-color:var(--gold);color:var(--gold);}
+.step-line{width:32px;height:1px;background:var(--border2);}
+.step-labels{display:flex;justify-content:space-between;padding:0 2px;margin-top:.4rem;}
+.step-label{font-size:9px;color:var(--text-muted);letter-spacing:.04em;text-align:center;width:68px;line-height:1.4;}
+
+/* PANEL */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem;margin-bottom:1.25rem;}
+.section-label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
+.section-label::before{content:'';display:inline-block;width:18px;height:1px;background:var(--gold);}
+.date-row{display:flex;gap:10px;}
+.date-row select{flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;padding:10px 8px;appearance:none;cursor:pointer;text-align:center;transition:border-color .2s;}
+.date-row select:hover{border-color:var(--gold);}
+.date-row select:focus{outline:none;border-color:var(--gold2);}
+.date-row select option{background:#1a1640;}
+.error-msg{font-size:12px;color:#f59999;margin-top:8px;display:none;}
+
+/* BUTTONS */
+.btn-gold{width:100%;margin-top:1.25rem;padding:14px;background:linear-gradient(135deg,#8b6914 0%,#d4a843 40%,#f0cc7a 70%,#d4a843 100%);border:none;border-radius:12px;color:#0a0814;font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:500;letter-spacing:.06em;cursor:pointer;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 24px rgba(212,168,67,.4);}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(212,168,67,.6);}
+.btn-gold:active{transform:scale(.98);}
+.btn-purple{width:100%;margin-top:1.25rem;padding:14px;background:linear-gradient(135deg,#4a3399 0%,#7c5ccf 40%,#c9a8f5 70%,#7c5ccf 100%);border:none;border-radius:12px;color:#fff;font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:500;letter-spacing:.06em;cursor:pointer;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 24px rgba(124,92,207,.4);}
+.btn-purple:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(124,92,207,.6);}
+.btn-purple:active{transform:scale(.98);}
+.btn-ghost{width:100%;padding:12px;background:transparent;border:1px solid var(--border2);border-radius:12px;color:var(--text-muted);font-family:'Noto Sans KR',sans-serif;font-size:14px;cursor:pointer;transition:background .2s,color .2s;margin-top:.75rem;}
+.btn-ghost:hover{background:var(--surface2);color:var(--text);}
+
+/* CARD GRID */
+.pick-hint{font-size:13px;color:var(--text-muted);text-align:center;margin-bottom:1.25rem;line-height:1.7;}
+.pick-hint.p{color:#d4c8f8;}
+.cards-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.25rem;}
+.tarot-card-btn{aspect-ratio:2/3;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;cursor:pointer;position:relative;overflow:hidden;transition:transform .2s,border-color .2s,box-shadow .2s;padding:0;}
+.tarot-card-btn::before{content:'';position:absolute;inset:5px;border:1px solid rgba(212,168,67,.22);border-radius:6px;pointer-events:none;transition:border-color .2s;}
+.tarot-card-btn::after{content:'✦';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;color:rgba(212,168,67,.28);transition:color .2s;}
+.tarot-card-btn:hover{transform:translateY(-5px) scale(1.04);border-color:var(--gold);box-shadow:0 10px 28px rgba(212,168,67,.35);}
+.tarot-card-btn:hover::before{border-color:rgba(212,168,67,.55);}
+.tarot-card-btn:hover::after{color:rgba(212,168,67,.65);}
+.tarot-card-btn.selected{border-color:var(--gold2);box-shadow:0 0 0 2px var(--gold2),0 10px 28px rgba(212,168,67,.45);transform:translateY(-5px) scale(1.04);}
+.tarot-card-btn.selected::after{color:var(--gold2);}
+.tarot-card-btn.rc::before{border-color:rgba(155,127,232,.22);}
+.tarot-card-btn.rc::after{color:rgba(155,127,232,.28);}
+.tarot-card-btn.rc:hover{border-color:var(--purple2);box-shadow:0 10px 28px rgba(124,92,207,.35);}
+.tarot-card-btn.rc:hover::before{border-color:rgba(155,127,232,.55);}
+.tarot-card-btn.rc:hover::after{color:rgba(155,127,232,.65);}
+.tarot-card-btn.rc.selected{border-color:var(--purple2);box-shadow:0 0 0 2px var(--purple2),0 10px 28px rgba(124,92,207,.45);}
+.tarot-card-btn.rc.selected::after{color:var(--purple2);}
+.card-num{position:absolute;bottom:6px;left:0;right:0;text-align:center;font-size:9px;color:rgba(212,168,67,.32);letter-spacing:.06em;}
+.rc .card-num{color:rgba(155,127,232,.32);}
+
+/* LOADING */
+.loading-sec{display:none;text-align:center;padding:3.5rem 1rem;}
+.loading-sec.active{display:block;}
+.spinner-ring{width:56px;height:56px;border:2px solid rgba(212,168,67,.15);border-top-color:var(--gold);border-right-color:var(--gold2);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 1.25rem;}
+.spinner-ring.p{border-color:rgba(155,127,232,.15);border-top-color:var(--purple);border-right-color:var(--purple2);}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-msg{font-size:13px;color:var(--text-muted);letter-spacing:.04em;}
+
+/* RESULT */
+.result-sec{display:none;}
+.result-sec.active{display:block;animation:fadeUp .6s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* 결과 헤더 */
+.res-header{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1rem;display:flex;align-items:center;gap:14px;}
+.res-header-icon{font-size:36px;flex-shrink:0;}
+.res-header-title{font-family:'Noto Serif KR',serif;font-size:17px;font-weight:600;color:var(--gold2);margin-bottom:3px;}
+.res-header-meta{font-size:11px;color:var(--text-muted);letter-spacing:.04em;}
+
+/* TODAY'S MESSAGE */
+.today-msg-box{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:1.4rem 1.5rem;margin-bottom:1rem;text-align:center;}
+.today-msg-label{font-size:10px;letter-spacing:.18em;color:var(--gold);text-transform:uppercase;margin-bottom:.85rem;}
+.today-msg-text{font-family:'Noto Serif KR',serif;font-size:15px;color:var(--text);line-height:1.85;margin-bottom:.9rem;}
+.today-msg-cta{font-size:12px;color:var(--gold2);}
+.today-msg-cta::before{content:'👉 ';}
+
+/* 2x2 운세 그리드 */
+.fortune-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem;}
+.fortune-tile{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;}
+.ft-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.ft-label{font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:5px;}
+.ft-score{font-size:24px;font-weight:700;font-family:'Cinzel',serif;}
+.ft-bar-bg{height:3px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;margin-bottom:8px;}
+.ft-bar{height:100%;border-radius:99px;width:0%;transition:width 1.2s cubic-bezier(.25,1,.5,1);}
+.ft-desc{font-size:12px;color:var(--text-muted);line-height:1.6;margin-bottom:5px;}
+.ft-tip{font-size:11px;color:var(--gold2);}
+.ft-tip::before{content:'✦ ';}
+.ft-love .ft-score{color:#ff6b8a;}.ft-love .ft-bar{background:linear-gradient(90deg,#c0374f,#ff6b8a);}
+.ft-money .ft-score{color:#f0b429;}.ft-money .ft-bar{background:linear-gradient(90deg,#b07d10,#f0b429);}
+.ft-health .ft-score{color:#4caf82;}.ft-health .ft-bar{background:linear-gradient(90deg,#2d7a57,#4caf82);}
+.ft-study .ft-score{color:#5b9cf6;}.ft-study .ft-bar{background:linear-gradient(90deg,#2563c4,#5b9cf6);}
+
+/* RISE 결과 */
+.rise-result-box{background:var(--surface);border:1px solid var(--pborder2);border-radius:var(--radius);padding:1.4rem 1.5rem;margin-bottom:1rem;}
+.rise-result-label{font-size:10px;letter-spacing:.18em;color:var(--purple2);text-transform:uppercase;margin-bottom:.85rem;}
+.rise-result-title{font-family:'Noto Serif KR',serif;font-size:18px;font-weight:600;color:var(--purple2);margin-bottom:.4rem;}
+.rise-result-sub{font-size:12px;color:var(--text-muted);margin-bottom:1rem;font-style:italic;}
+.rise-bullet{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--text);line-height:1.65;margin-bottom:6px;}
+.rise-bullet::before{content:'✦';color:var(--purple2);flex-shrink:0;font-size:10px;margin-top:3px;}
+
+/* 종합 해석 */
+.combined-box{background:linear-gradient(135deg,rgba(40,20,100,.3),rgba(80,50,10,.15));border:1px solid rgba(155,127,232,.3);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1rem;}
+.combined-label{font-size:10px;letter-spacing:.15em;color:var(--purple2);text-transform:uppercase;margin-bottom:.75rem;}
+.combined-text{font-family:'Noto Serif KR',serif;font-size:14px;color:#e0d8f8;line-height:1.9;}
+.combined-text::before{content:'🔮 ';}
+
+/* 해시태그 */
+.hashtag-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1rem;}
+.hashtag{font-size:12px;color:var(--text-muted);background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:20px;padding:4px 12px;}
+
+/* RISE 모토 */
+.rise-motto{border:1px solid var(--pborder2);border-radius:var(--radius);padding:1.25rem;text-align:center;margin-bottom:1.5rem;background:linear-gradient(135deg,rgba(124,92,207,.08),rgba(124,92,207,.02));}
+.rise-motto-text{font-family:'Noto Serif KR',serif;font-size:16px;font-weight:600;color:var(--purple2);letter-spacing:.04em;line-height:1.6;}
+.rise-motto-sub{font-size:11px;color:var(--text-muted);letter-spacing:.1em;margin-top:6px;}
+
+.footer{text-align:center;margin-top:2.5rem;font-size:11px;color:rgba(212,168,67,.3);letter-spacing:.1em;}
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+<div class="container">
+
+  <div class="header">
+    <span class="orb">🔮</span>
+    <div class="rise-logo">R<span>I</span>SE</div>
+    <div class="header-sub">조선대학교 RISE사업단</div>
+    <h1>RISE의 신묘한 타로상점</h1>
+  </div>
+
+  <!-- STEP BAR -->
+  <div class="step-wrap">
+    <div class="step-bar">
+      <div class="step-dot active" id="dot1">1</div>
+      <div class="step-line"></div>
+      <div class="step-dot" id="dot2">2</div>
+      <div class="step-line"></div>
+      <div class="step-dot" id="dot3">3</div>
+      <div class="step-line"></div>
+      <div class="step-dot" id="dot4">4</div>
+    </div>
+    <div class="step-labels">
+      <div class="step-label">생년월일 입력</div>
+      <div class="step-label">타로 카드 선택</div>
+      <div class="step-label">RISE 카드 선택</div>
+      <div class="step-label">결과 확인</div>
+    </div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div id="s1">
+    <div class="panel">
+      <div class="section-label">생년월일 입력</div>
+      <div class="date-row">
+        <select id="selYear" aria-label="연도"><option value="">연도</option></select>
+        <select id="selMonth" aria-label="월"><option value="">월</option></select>
+        <select id="selDay" aria-label="일"><option value="">일</option></select>
+      </div>
+      <div class="error-msg" id="inputError">⚠ 날짜를 모두 선택해주세요.</div>
+      <button class="btn-gold" onclick="goS2()">다음 →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: TAROT SELECT -->
+  <div id="s2" style="display:none;">
+    <p class="pick-hint">🌙 오늘의 운세 카드를 뽑아보세요<br>마음이 끌리는 카드 하나를 선택하세요</p>
+    <div class="cards-grid" id="tarotGrid"></div>
+    <button class="btn-gold" id="btnT" onclick="goS3()" style="display:none;">다음 →</button>
+    <button class="btn-ghost" onclick="back(1)">← 다시 입력</button>
+  </div>
+
+  <!-- STEP 3: RISE SELECT -->
+  <div id="s3" style="display:none;">
+    <p class="pick-hint p">✨ RISE 카드를 뽑아보세요<br>오늘 당신에게 필요한 방향을 알려드립니다</p>
+    <div class="cards-grid" id="riseGrid"></div>
+    <button class="btn-purple" id="btnR" onclick="showResult()" style="display:none;">결과 보기 ✨</button>
+    <button class="btn-ghost" onclick="back(2)">← 타로 카드로</button>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading-sec" id="loading">
+    <div class="spinner-ring p"></div>
+    <div class="loading-msg" id="loadingMsg">카드의 기운을 해석하는 중...</div>
+  </div>
+
+  <!-- STEP 4: RESULT -->
+  <div class="result-sec" id="s4">
+
+    <!-- 헤더: 카드유형 + 날짜 + 나이 -->
+    <div class="res-header">
+      <div class="res-header-icon" id="resHeaderIcon"></div>
+      <div>
+        <div class="res-header-title" id="resHeaderTitle"></div>
+        <div class="res-header-meta" id="resHeaderMeta"></div>
+      </div>
+    </div>
+
+    <!-- TODAY'S MESSAGE -->
+    <div class="today-msg-box">
+      <div class="today-msg-label">✦ Today's Message ✦</div>
+      <div class="today-msg-text" id="todayMsgText"></div>
+      <div class="today-msg-cta" id="todayMsgCta"></div>
+    </div>
+
+    <!-- 2x2 운세 그리드 -->
+    <div class="fortune-grid">
+      <div class="fortune-tile ft-love">
+        <div class="ft-head">
+          <div class="ft-label"><span class="ft-label-icon">❤️</span> 애정운</div>
+          <div class="ft-score" id="scoreLove"></div>
+        </div>
+        <div class="ft-bar-bg"><div class="ft-bar" id="barLove"></div></div>
+        <div class="ft-desc" id="descLove"></div>
+        <div class="ft-tip" id="tipLove"></div>
+      </div>
+      <div class="fortune-tile ft-money">
+        <div class="ft-head">
+          <div class="ft-label"><span class="ft-label-icon">🪙</span> 금전운</div>
+          <div class="ft-score" id="scoreMoney"></div>
+        </div>
+        <div class="ft-bar-bg"><div class="ft-bar" id="barMoney"></div></div>
+        <div class="ft-desc" id="descMoney"></div>
+        <div class="ft-tip" id="tipMoney"></div>
+      </div>
+      <div class="fortune-tile ft-health">
+        <div class="ft-head">
+          <div class="ft-label"><span class="ft-label-icon">🌿</span> 건강운</div>
+          <div class="ft-score" id="scoreHealth"></div>
+        </div>
+        <div class="ft-bar-bg"><div class="ft-bar" id="barHealth"></div></div>
+        <div class="ft-desc" id="descHealth"></div>
+        <div class="ft-tip" id="tipHealth"></div>
+      </div>
+      <div class="fortune-tile ft-study">
+        <div class="ft-head">
+          <div class="ft-label"><span class="ft-label-icon">📖</span> 학업운</div>
+          <div class="ft-score" id="scoreStudy"></div>
+        </div>
+        <div class="ft-bar-bg"><div class="ft-bar" id="barStudy"></div></div>
+        <div class="ft-desc" id="descStudy"></div>
+        <div class="ft-tip" id="tipStudy"></div>
+      </div>
+    </div>
+
+    <!-- RISE 카드 결과 -->
+    <div class="rise-result-box">
+      <div class="rise-result-label">✦ RISE 카드 해석</div>
+      <div class="rise-result-title" id="riseResultTitle"></div>
+      <div class="rise-result-sub" id="riseResultSub"></div>
+      <div id="riseBulletsNew"></div>
+    </div>
+
+    <!-- 종합 해석 -->
+    <div class="combined-box">
+      <div class="combined-label">🔮 타로 × RISE 종합 해석</div>
+      <div class="combined-text" id="combinedText"></div>
+    </div>
+
+    <!-- 해시태그 -->
+    <div class="hashtag-row" id="hashtagRow"></div>
+
+    <!-- RISE 모토 -->
+    <div class="rise-motto">
+      <div class="rise-motto-text" id="riseMotto"></div>
+      <div class="rise-motto-sub">RISE · 조선대학교 RISE사업단</div>
+    </div>
+
+    <button class="btn-ghost" onclick="resetAll()">↩ 처음으로</button>
+  </div>
+
+  <div class="footer">✦ &nbsp; 오늘도 좋은 흐름이 당신과 함께하길 &nbsp; ✦</div>
+</div>
+
+<script>
+/* ===== 일반 타로 16장 ===== */
+const TAROT = [
+  {id:0,name:"The Sun",ko:"태양",icon:"☀️",keywords:["활력","성공","긍정"],
+   daily:{energy:[88,"밝고 적극적인 에너지가 넘치는 날입니다. 자신 있게 도전해보세요."],relation:[82,"따뜻한 기운이 주변을 밝힙니다. 새로운 인연이 찾아올 수 있어요."],growth:[90,"노력이 빛을 발하는 시기입니다. 좋은 결과를 기대해도 좋아요."],luck:[85,"예상치 못한 행운이 따릅니다. 자신감을 갖고 움직이세요."]},
+   overall:"오늘은 무엇이든 잘 풀리는 황금 같은 날입니다. 태양이 당신을 응원하고 있어요 ☀️",
+   vibe:"긍정적이고 활력 넘치는"},
+  {id:1,name:"The Moon",ko:"달",icon:"🌙",keywords:["직관","신비","감성"],
+   daily:{energy:[68,"감성이 예민한 날입니다. 혼자만의 시간이 필요할 수 있어요."],relation:[72,"솔직하게 마음을 표현하면 오해가 풀립니다."],growth:[65,"중요한 결정은 내일로 미루는 게 나을 수 있어요."],luck:[66,"직관보다 이성적 판단이 필요한 날입니다."]},
+   overall:"오늘은 감성이 예민하게 살아있는 날이에요. 내면의 소리에 귀 기울여보세요 🌙",
+   vibe:"감성적이고 내면에 집중하는"},
+  {id:2,name:"The Star",ko:"별",icon:"⭐",keywords:["희망","치유","영감"],
+   daily:{energy:[82,"희망찬 에너지가 샘솟는 날입니다."],relation:[80,"진심이 통하는 하루예요. 화해의 기회가 찾아올 수 있어요."],growth:[85,"창의적인 아이디어가 넘치는 날!"],luck:[78,"작은 노력이 나중에 큰 결실로 돌아옵니다."]},
+   overall:"어두운 밤에 별이 빛나듯, 오늘 당신의 가능성이 빛납니다. 꿈을 포기하지 마세요 ⭐",
+   vibe:"희망적이고 영감이 충만한"},
+  {id:3,name:"The Tower",ko:"탑",icon:"🌩️",keywords:["변화","해방","전환"],
+   daily:{energy:[60,"변화의 에너지가 강한 날입니다. 유연하게 대처하세요."],relation:[58,"예상치 못한 변화가 있을 수 있어요."],growth:[65,"기존의 방식을 재검토할 때입니다."],luck:[55,"갑작스러운 변수에 대비해두세요."]},
+   overall:"탑 카드는 재건의 시작입니다. 놓아야 할 것을 내려놓으면 더 강해져요 🌩️",
+   vibe:"변화와 전환을 준비하는"},
+  {id:4,name:"Justice",ko:"정의",icon:"⚖️",keywords:["균형","공정","진실"],
+   daily:{energy:[78,"균형 잡힌 에너지가 흐르는 날입니다."],relation:[75,"진심 어린 대화가 관계를 더 탄탄하게 만듭니다."],growth:[85,"정직한 노력이 공정한 평가를 받습니다."],luck:[78,"계약이나 협상에 유리한 날입니다."]},
+   overall:"오늘은 진실이 빛나는 날입니다. 올바른 선택이 좋은 결과로 이어져요 ⚖️",
+   vibe:"균형감 있고 신중한"},
+  {id:5,name:"The Chariot",ko:"전차",icon:"🏆",keywords:["의지","승리","추진력"],
+   daily:{energy:[92,"추진력이 최고조에 달하는 날입니다!"],relation:[70,"적극적으로 마음을 표현하세요."],growth:[88,"집중력이 강한 날입니다."],luck:[82,"의지가 있는 곳에 길이 열립니다."]},
+   overall:"오늘은 당신의 의지가 모든 것을 이기는 날입니다. 망설이지 말고 달려가세요 🏆",
+   vibe:"강한 추진력과 의지로 가득한"},
+  {id:6,name:"The Empress",ko:"여황제",icon:"🌸",keywords:["풍요","창조","사랑"],
+   daily:{energy:[85,"풍요롭고 따뜻한 에너지가 넘치는 날입니다."],relation:[90,"사랑이 풍성하게 넘치는 날이에요."],growth:[75,"창의적인 작업에서 두각을 나타냅니다."],luck:[83,"풍요로운 기운이 감돕니다."]},
+   overall:"여황제는 풍요와 창조의 상징입니다. 주변의 아름다운 것들에 감사해보세요 🌸",
+   vibe:"풍요롭고 창의적인"},
+  {id:7,name:"The Emperor",ko:"황제",icon:"👑",keywords:["권위","안정","리더십"],
+   daily:{energy:[84,"안정적인 리더십 에너지가 강한 날입니다."],relation:[68,"감정보다 이성적으로 접근하는 날입니다."],growth:[90,"리더십을 발휘할 기회가 찾아옵니다."],luck:[82,"결단력 있는 행동이 좋은 결과를 만듭니다."]},
+   overall:"오늘은 당신이 주도권을 가진 날입니다. 자신감 있게 결정하고 앞으로 나아가세요 👑",
+   vibe:"주도적이고 결단력 있는"},
+  {id:8,name:"The Wheel",ko:"운명의 수레바퀴",icon:"🌀",keywords:["기회","변화","운"],
+   daily:{energy:[80,"운명의 기운이 흐르는 날입니다."],relation:[78,"운명 같은 만남의 기운이 있어요."],growth:[80,"예상치 못한 기회가 찾아옵니다."],luck:[85,"작은 행운이 찾아올 수 있어요."]},
+   overall:"운명의 수레바퀴가 돌아가고 있어요. 변화의 흐름을 받아들이면 더 큰 기회가 옵니다 🌀",
+   vibe:"기회를 포착하고 변화를 받아들이는"},
+  {id:9,name:"Strength",ko:"힘",icon:"🦁",keywords:["용기","인내","내면의 힘"],
+   daily:{energy:[84,"부드럽지만 강한 에너지가 흐르는 날입니다."],relation:[80,"인내심을 가지고 기다리면 보상이 찾아옵니다."],growth:[83,"어려운 상황도 부드럽게 극복할 힘이 있어요."],luck:[78,"꾸준함이 행운을 만듭니다."]},
+   overall:"진정한 힘은 부드러움에서 나옵니다. 오늘 당신은 생각보다 훨씬 강합니다 🦁",
+   vibe:"인내하며 내면의 힘을 발휘하는"},
+  {id:10,name:"The Hermit",ko:"은둔자",icon:"🕯️",keywords:["성찰","지혜","고독"],
+   daily:{energy:[68,"조용히 내면을 들여다보는 날입니다."],relation:[60,"혼자만의 시간이 필요한 날이에요."],growth:[78,"혼자 깊이 생각하고 연구하는 일이 잘 됩니다."],luck:[70,"고요함 속에서 지혜를 발견하는 날입니다."]},
+   overall:"오늘은 내면을 들여다보는 날입니다. 고요함 속에서 지혜를 발견해보세요 🕯️",
+   vibe:"깊이 성찰하며 지혜를 구하는"},
+  {id:11,name:"Death",ko:"변환",icon:"💫",keywords:["변환","끝과 시작","해방"],
+   daily:{energy:[65,"전환의 에너지가 강한 날입니다."],relation:[62,"관계의 전환점에 서 있어요."],growth:[70,"한 챕터가 끝나고 새로운 시작이 기다립니다."],luck:[68,"낡은 것을 버리면 새 기회가 옵니다."]},
+   overall:"끝이 아닌 변화의 시작입니다. 두려움 없이 새로운 챕터를 열어보세요 💫",
+   vibe:"새로운 시작을 향해 전환하는"},
+  {id:12,name:"Judgement",ko:"심판",icon:"😇",keywords:["부활","각성","새 출발"],
+   daily:{energy:[80,"새 출발의 에너지가 강한 날입니다."],relation:[77,"과거의 상처를 치유하고 새 출발할 기회입니다."],growth:[82,"중요한 결정을 내릴 시점입니다."],luck:[78,"용서와 각성이 새 기회를 만듭니다."]},
+   overall:"심판의 나팔 소리가 울립니다. 지금이 진정한 자아를 깨울 때입니다 😇",
+   vibe:"각성하고 새롭게 출발하는"},
+  {id:13,name:"The World",ko:"세계",icon:"🌍",keywords:["완성","성취","통합"],
+   daily:{energy:[90,"완성을 향한 강한 에너지가 흐릅니다."],relation:[88,"완전한 조화와 이해가 이루어지는 날입니다."],growth:[92,"목표 달성이 눈앞에 있습니다."],luck:[88,"노력이 결실을 맺는 시기입니다."]},
+   overall:"세계 카드는 가장 긍정적인 카드입니다. 오늘 당신은 무엇이든 이룰 수 있어요 🌍",
+   vibe:"완성과 성취를 향해 달려가는"},
+  {id:14,name:"The Fool",ko:"바보",icon:"🃏",keywords:["새 시작","자유","모험"],
+   daily:{energy:[82,"자유롭고 설레는 에너지가 넘치는 날입니다."],relation:[76,"두려움 없이 마음을 표현해보세요."],growth:[73,"신선한 시각으로 문제를 바라보세요."],luck:[80,"시작하기에 좋은 기운이 감돕니다."]},
+   overall:"바보 카드는 설렘의 시작입니다. 완벽하지 않아도 괜찮아요. 오늘은 즐기세요! 🎉",
+   vibe:"자유롭고 설레는 새 시작을 앞둔"},
+  {id:15,name:"High Priestess",ko:"여사제",icon:"🔮",keywords:["직관","신비","내면의 앎"],
+   daily:{energy:[76,"내면의 지혜가 빛나는 날입니다."],relation:[79,"말하지 않아도 서로를 이해하는 교감의 날이에요."],growth:[77,"논리보다 직관이 정답에 가깝습니다."],luck:[74,"첫 번째 느낌을 신뢰하세요."]},
+   overall:"여사제가 속삭입니다: 당신 안에 이미 모든 답이 있어요. 내면에 귀 기울여보세요 🔮",
+   vibe:"직관적이고 신비로운 내면을 가진"}
+];
+
+/* ===== RISE 카드 16장 ===== */
+const RISE = [
+  {id:0,type:"The Career",typeKo:"취업형",name:"취업연결",icon:"🤝",tagline:"'취업연결'",desc:"채용과 취업 지원의 문이 열려 있습니다",bullets:["채용 및 취업 지원 기회가 열려 있습니다","기업과 직접 연결될 가능성이 높습니다","지금 시작하면 취업으로 이어질 흐름입니다"],motto:"RISE와 움직이면 결과가 따라옵니다",combined:{"긍정적이고 활력 넘치는":"활력 넘치는 오늘, 채용 공고에 적극적으로 지원해보세요. 당신의 에너지가 면접관을 사로잡을 수 있는 날입니다.","감성적이고 내면에 집중하는":"오늘은 나를 돌아보며 진정으로 원하는 직업이 무엇인지 생각해보세요. 내면의 확신이 취업 연결의 첫 걸음입니다.","희망적이고 영감이 충만한":"희망을 품고 이력서를 다시 점검해보세요. 오늘의 작은 준비가 취업 연결의 씨앗이 됩니다.","default":"오늘의 기운을 모아 취업 지원에 집중해보세요. 기업과 연결될 흐름이 열려 있습니다."}},
+  {id:1,type:"The Career",typeKo:"취업형",name:"현장경험",icon:"🏭",tagline:"'현장경험'",desc:"실무 현장에서 쌓는 진짜 경험의 시간",bullets:["현장실습 및 인턴 기회가 열려 있습니다","실무 경험을 통해 경쟁력을 갖출 수 있습니다","경험이 곧 취업으로 이어질 수 있습니다"],motto:"RISE와 움직이면 결과가 따라옵니다",combined:{"default":"오늘의 에너지를 현장에서 발휘해보세요. 직접 부딪히는 경험이 가장 강한 스펙이 됩니다."}},
+  {id:2,type:"The Career",typeKo:"취업형",name:"진로방향",icon:"🧭",tagline:"'진로방향'",desc:"나만의 길을 찾아가는 나침반의 시간",bullets:["직무 및 진로탐색의 기회가 열려 있습니다","다양한 분야를 경험할 수 있습니다","방향이 잡히면 취업은 쉬워집니다"],motto:"RISE와 움직이면 결과가 따라옵니다",combined:{"감성적이고 내면에 집중하는":"내면을 들여다보는 오늘이야말로 진로를 탐색하기 가장 좋은 날입니다. 당신이 진정 원하는 것을 찾아보세요.","깊이 성찰하며 지혜를 구하는":"조용히 생각하는 오늘, 진로 상담이나 멘토와의 대화를 통해 방향을 잡아보세요.","default":"오늘 다양한 분야를 탐색해보세요. 방향이 잡히는 순간 취업의 문이 넓어집니다."}},
+  {id:3,type:"The Career",typeKo:"취업형",name:"집중준비",icon:"📚",tagline:"'집중준비'",desc:"완벽한 준비가 최고의 기회를 만듭니다",bullets:["취업 집중 프로그램과 멘토링이 제공됩니다","실전 대비 가능한 환경이 마련되어 있습니다","지금이 준비를 완성할 타이밍입니다"],motto:"RISE와 움직이면 결과가 따라옵니다",combined:{"강한 추진력과 의지로 가득한":"오늘의 강한 의지를 취업 준비에 집중하세요. 누구보다 빠르게 완성도를 높일 수 있는 날입니다.","default":"오늘이 바로 준비를 완성할 타이밍입니다. RISE의 프로그램을 적극 활용해보세요."}},
+  {id:4,type:"The Experience",typeKo:"경험형",name:"실전 프로젝트",icon:"🛠️",tagline:"'실전 프로젝트'",desc:"진짜 문제를 해결하는 실전의 날",bullets:["기업 연계 프로젝트 참가 기회가 열려 있습니다","실제 문제 해결 경험을 쌓을 수 있습니다","결과로 이어지는 경험을 만들 수 있습니다"],motto:"RISE와 시작하면 기회는 현실이 됩니다",combined:{"강한 추진력과 의지로 가득한":"오늘의 추진력을 프로젝트에 쏟아부어보세요. 실전에서 당신의 능력이 빛날 날입니다.","풍요롭고 창의적인":"창의적인 아이디어를 실전 프로젝트에 녹여보세요. 오늘은 특별한 결과를 만들 수 있는 날입니다.","default":"실전에서 배우는 것이 가장 강한 경험입니다. 오늘 프로젝트에 적극 참여해보세요."}},
+  {id:5,type:"The Experience",typeKo:"경험형",name:"결과물",icon:"🏆",tagline:"'결과물'",desc:"눈에 보이는 성과를 만들어낼 때",bullets:["캡스톤디자인 및 팀 프로젝트가 운영됩니다","시제품 제작과 발표 경험이 가능합니다","눈에 보이는 성과를 남길 수 있습니다"],motto:"RISE와 시작하면 기회는 현실이 됩니다",combined:{"완성과 성취를 향해 달려가는":"완성을 향한 에너지가 강한 오늘, 결과물의 마무리에 집중해보세요. 최고의 성과를 낼 수 있는 날입니다.","default":"오늘 하나의 결과물을 완성해보세요. 눈에 보이는 성과가 가장 강한 스펙이 됩니다."}},
+  {id:6,type:"The Experience",typeKo:"경험형",name:"협업경험",icon:"👥",tagline:"'협업경험'",desc:"함께할 때 더 멀리 갈 수 있습니다",bullets:["기업·교수·학생 협업 기회가 열려 있습니다","산업 기반 프로젝트에 참여할 수 있습니다","협업 경험이 경쟁력이 됩니다"],motto:"RISE와 시작하면 기회는 현실이 됩니다",combined:{"풍요롭고 창의적인":"따뜻한 오늘의 기운을 팀에 나눠주세요. 당신의 창의성이 협업을 빛나게 할 것입니다.","기회를 포착하고 변화를 받아들이는":"오늘 만나는 팀원이 미래의 동료가 될 수 있어요. 협업의 기회를 놓치지 마세요.","default":"혼자보다 함께할 때 더 멀리 갑니다. 오늘 협업에 적극적으로 참여해보세요."}},
+  {id:7,type:"The Experience",typeKo:"경험형",name:"증명할 결과물",icon:"📋",tagline:"'증명할 결과물'",desc:"당신의 능력을 세상에 보여줄 시간",bullets:["프로젝트 기반 학습이 제공됩니다","포트폴리오를 구축할 수 있습니다","남는 경험이 스펙이 됩니다"],motto:"RISE와 시작하면 기회는 현실이 됩니다",combined:{"균형감 있고 신중한":"신중한 오늘, 포트폴리오를 꼼꼼히 정리해보세요. 당신의 능력을 제대로 보여줄 수 있는 날입니다.","default":"오늘 포트폴리오 한 페이지를 채워보세요. 그것이 당신의 가장 강력한 무기가 됩니다."}},
+  {id:8,type:"The Journey",typeKo:"활동형",name:"현장경험",icon:"🌱",tagline:"'현장경험'",desc:"발로 뛰며 배우는 진짜 경험의 시간",bullets:["지역사회 연계활동 기회가 열려 있습니다","다양한 현장 프로젝트에 참여할 수 있습니다","경험의 범위가 확장됩니다"],motto:"RISE와 나아가면 새로운 길이 열립니다",combined:{"자유롭고 설레는 새 시작을 앞둔":"설레는 에너지로 현장에 뛰어들어보세요. 새로운 경험이 당신의 가능성을 넓혀줄 것입니다.","default":"세상은 교과서 밖에 있습니다. 오늘 직접 나가서 경험하는 날로 만들어보세요."}},
+  {id:9,type:"The Journey",typeKo:"활동형",name:"글로벌 경험",icon:"🌏",tagline:"'글로벌 경험'",desc:"세계로 시야를 넓히는 특별한 기회",bullets:["해외 프로그램 및 활동 기회가 있습니다","다양한 환경에서 경험을 쌓을 수 있습니다","시야를 넓힐 수 있는 흐름입니다"],motto:"RISE와 나아가면 새로운 길이 열립니다",combined:{"희망적이고 영감이 충만한":"희망찬 에너지로 글로벌 도전에 한 발 내딛어보세요. 세계가 당신을 기다리고 있습니다.","자유롭고 설레는 새 시작을 앞둔":"자유로운 오늘의 기운을 세계를 향한 도전에 쏟아보세요. 새로운 세상이 열립니다.","default":"세계는 넓고 기회는 어디에나 있습니다. 오늘 글로벌 프로그램에 관심을 가져보세요."}},
+  {id:10,type:"The Journey",typeKo:"활동형",name:"연결",icon:"🔗",tagline:"'연결'",desc:"사람과 사람, 기회와 기회가 이어지는 날",bullets:["사람들과 교류할 기회가 열려 있습니다","네트워크를 형성할 수 있습니다","연결이 새로운 기회로 이어집니다"],motto:"RISE와 나아가면 새로운 길이 열립니다",combined:{"긍정적이고 활력 넘치는":"밝은 에너지로 먼저 다가가보세요. 오늘 만나는 사람이 미래의 중요한 인연이 될 수 있어요.","기회를 포착하고 변화를 받아들이는":"변화의 흐름 속에서 새로운 연결이 기회를 만들어줍니다. 적극적으로 교류해보세요.","default":"연결은 기적을 만듭니다. 오늘 한 사람과 진심으로 이야기해보세요."}},
+  {id:11,type:"The Journey",typeKo:"활동형",name:"미래 역량",icon:"⚡",tagline:"'미래 역량'",desc:"미래를 준비하는 특별한 역량을 키울 시간",bullets:["AI·디지털 기반 교육이 제공됩니다","실무 중심 역량을 키울 수 있습니다","미래를 대비할 수 있는 흐름입니다"],motto:"RISE와 나아가면 새로운 길이 열립니다",combined:{"직관적이고 신비로운 내면을 가진":"오늘의 예리한 직관을 새로운 기술 탐색에 활용해보세요. 당신의 미래 역량이 빛날 것입니다.","주도적이고 결단력 있는":"오늘의 리더십 에너지를 미래 역량 개발에 쏟아보세요. AI·디지털 분야에 도전해볼 최적의 날입니다.","default":"미래는 준비하는 자의 것입니다. 오늘 새로운 기술 하나를 배워보세요."}},
+  {id:12,type:"The Creation",typeKo:"창업형",name:"시작",icon:"🚀",tagline:"'시작'",desc:"모든 위대한 것은 작은 시작에서 비롯됩니다",bullets:["창업동아리 및 팀 활동이 지원됩니다","아이디어를 발전시킬 수 있습니다","작은 시작이 기회가 됩니다"],motto:"RISE와 실행하면 생각은 현실이 됩니다",combined:{"자유롭고 설레는 새 시작을 앞둔":"오늘의 설레는 에너지가 창업의 첫 발걸음과 완벽하게 어울립니다. 지금 시작하세요!","각성하고 새롭게 출발하는":"새로운 자아로 거듭나는 오늘, 창업 아이디어를 구체화해보세요. 새 출발이 당신을 기다립니다.","default":"시작이 반입니다. 오늘 완벽하지 않아도 됩니다. 작은 첫 걸음이 모든 것을 바꿉니다."}},
+  {id:13,type:"The Creation",typeKo:"창업형",name:"구현",icon:"💡",tagline:"'구현'",desc:"아이디어를 현실로 만들어낼 순간",bullets:["시제품·제작 지원이 제공됩니다","전문가의 도움을 받을 수 있습니다","아이디어를 실제로 만들 수 있습니다"],motto:"RISE와 실행하면 생각은 현실이 됩니다",combined:{"풍요롭고 창의적인":"창의적인 에너지가 넘치는 오늘, 머릿속의 아이디어를 꺼내 구현해보세요. 당신의 창의력이 빛날 날입니다.","강한 추진력과 의지로 가득한":"강한 추진력으로 아이디어를 현실로 만들어보세요. 오늘이 구현을 시작할 최고의 날입니다.","default":"머릿속의 아이디어를 세상에 꺼내보세요. RISE가 구현을 도와드립니다."}},
+  {id:14,type:"The Creation",typeKo:"창업형",name:"실전경험",icon:"🎯",tagline:"'실전경험'",desc:"창업의 현장에서 직접 부딪히는 시간",bullets:["창업캠프 및 워크숍이 운영됩니다","아이디어를 구체화할 수 있습니다","실행 기반 경험을 쌓을 수 있습니다"],motto:"RISE와 실행하면 생각은 현실이 됩니다",combined:{"변화와 전환을 준비하는":"변화를 두려워하지 말고 창업 현장에 직접 뛰어들어보세요. 부딪힘이 성장의 씨앗입니다.","새로운 시작을 향해 전환하는":"새로운 챕터를 시작하기에 오늘이 딱 좋습니다. 창업 워크숍이나 캠프에 참여해보세요.","default":"창업은 도전하는 자의 것입니다. 오늘 직접 현장을 경험해보세요."}},
+  {id:15,type:"The Creation",typeKo:"창업형",name:"성장",icon:"🌿",tagline:"'성장'",desc:"씨앗이 나무로 자라는 성장의 시간",bullets:["사업화 및 창업 지원이 이루어집니다","멘토링과 연계 기회가 있습니다","실제 창업으로 이어질 수 있습니다"],motto:"RISE와 실행하면 생각은 현실이 됩니다",combined:{"인내하며 내면의 힘을 발휘하는":"꾸준히 성장하는 오늘의 에너지처럼, 창업의 씨앗을 심어보세요. 묵묵한 노력이 큰 나무가 됩니다.","완성과 성취를 향해 달려가는":"성취를 향한 강한 에너지로 창업의 다음 단계를 밟아보세요. 성장의 결실이 기다립니다.","default":"오늘의 작은 노력이 내일의 큰 나무가 됩니다. RISE와 함께 꾸준히 성장해나가세요."}}
+];
+
+const AREAS=[
+  {key:'energy',label:'오늘의 에너지'},
+  {key:'relation',label:'인연·관계운'},
+  {key:'growth',label:'성장·학습운'},
+  {key:'luck',label:'기회·행운운'}
+];
+
+let pickedTarot=null, pickedRise=null;
+
+// Stars
+(function(){
+  const w=document.getElementById('stars');
+  for(let i=0;i<80;i++){
+    const s=document.createElement('div');s.className='star';
+    s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';
+    s.style.setProperty('--d',(2+Math.random()*4)+'s');
+    s.style.setProperty('--delay',(Math.random()*4)+'s');
+    w.appendChild(s);
+  }
+})();
+
+// Selects
+(function(){
+  const y=document.getElementById('selYear'),m=document.getElementById('selMonth'),d=document.getElementById('selDay');
+  for(let i=2010;i>=1940;i--) y.add(new Option(i+'년',i));
+  for(let i=1;i<=12;i++) m.add(new Option(i+'월',i));
+  for(let i=1;i<=31;i++) d.add(new Option(i+'일',i));
+})();
+
+function setStep(n){
+  [1,2,3,4].forEach(i=>{
+    const d=document.getElementById('dot'+i);
+    d.classList.remove('active','p','done');
+    if(i<n) d.classList.add('done');
+    else if(i===n){
+      d.classList.add('active');
+      if(n===3) d.classList.add('p');
+    }
+  });
+}
+
+function buildGrid(containerId, cards, cssClass, btnId){
+  const g=document.getElementById(containerId);
+  g.innerHTML='';
+  const order=[...Array(cards.length).keys()];
+  for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
+  order.forEach((ci,pos)=>{
+    const card=cards[ci];
+    const btn=document.createElement('button');
+    btn.className='tarot-card-btn'+(cssClass?' '+cssClass:'');
+    btn.dataset.id=card.id;
+    btn.setAttribute('aria-label','카드 '+(pos+1));
+    btn.innerHTML=`<div class="card-num">${pos+1}</div>`;
+    btn.style.cssText='opacity:0;transform:translateY(12px);transition:opacity .35s ease,transform .35s ease,border-color .2s,box-shadow .2s;';
+    btn.onclick=()=>{
+      g.querySelectorAll('.tarot-card-btn').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      if(btnId==='btnT') pickedTarot=card;
+      else pickedRise=card;
+      document.getElementById(btnId).style.display='block';
+    };
+    g.appendChild(btn);
+    setTimeout(()=>{btn.style.opacity='1';btn.style.transform='translateY(0)';},pos*40+100);
+  });
+}
+
+function goS2(){
+  const y=document.getElementById('selYear').value,m=document.getElementById('selMonth').value,d=document.getElementById('selDay').value;
+  if(!y||!m||!d){document.getElementById('inputError').style.display='block';return;}
+  document.getElementById('inputError').style.display='none';
+  document.getElementById('s1').style.display='none';
+  setStep(2);
+  buildGrid('tarotGrid',TAROT,'','btnT');
+  show('s2');
+}
+
+function goS3(){
+  if(!pickedTarot) return;
+  hide('s2');
+  setStep(3);
+  buildGrid('riseGrid',RISE,'rc','btnR');
+  show('s3');
+}
+
+function showResult(){
+  if(!pickedRise) return;
+  hide('s3');
+  const ld=document.getElementById('loading');
+  ld.classList.add('active');
+  const msgs=['카드의 기운을 해석하는 중...','타로와 RISE를 연결하는 중...','오늘의 흐름을 읽는 중...'];
+  let mi=0;
+  const lmEl=document.getElementById('loadingMsg');
+  const iv=setInterval(()=>{mi=(mi+1)%msgs.length;lmEl.textContent=msgs[mi];},700);
+  setTimeout(()=>{
+    clearInterval(iv);
+    ld.classList.remove('active');
+    setStep(4);
+    const rs=document.getElementById('s4');
+    rs.classList.remove('active');
+    rs.style.display='none';
+    renderResult();
+    void rs.offsetHeight;
+    rs.style.display='block';
+    rs.classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  },2200);
+}
+
+/* ===== 운세 타일 데이터 (카드별 4가지 운세 + 팁 + 액션) ===== */
+const FORTUNE_TILES = {
+  0:{love:[72,"먼저 연락해보세요. 작은 용기가 큰 인연을 만듭니다.","SNS 한 통이 시작일 수 있어요"],money:[65,"RISE 장학금도 확인해보세요.","취업지원센터 장학 프로그램 확인"],health:[80,"숙면이 최고의 면접 준비입니다.","30분 산책으로 머리를 맑게"],study:[88,"실무 포트폴리오에 집중할 날입니다.","RISE 산학협력 프로젝트 정리"]},
+  1:{love:[60,"감정을 일기에 정리해보세요.","오늘은 나를 위한 시간을 가지세요"],money:[62,"충동구매는 잠시 참아보세요.","소비 내역 점검 추천"],health:[74,"충분한 수면이 가장 중요해요.","오늘은 일찍 자는 것 추천"],study:[65,"혼자 조용히 집중하는 날입니다.","도서관에서 집중 공부 추천"]},
+  2:{love:[80,"진심을 담아 메시지를 보내보세요.","오늘 용기 내어 먼저 연락해보세요"],money:[78,"작은 저축이 미래를 만듭니다.","RISE 장학금 신청 기회 확인"],health:[82,"가벼운 스트레칭으로 시작하세요.","10분 명상으로 하루를 열어요"],study:[85,"새로운 아이디어를 노트에 적어보세요.","RISE 프로젝트 아이디어 메모 추천"]},
+  3:{love:[55,"오늘은 혼자만의 시간을 가지세요.","무리한 연락은 잠시 쉬어가요"],money:[50,"큰 지출은 오늘을 피해보세요.","비상금 계좌 잔액 확인"],health:[65,"스트레스 관리가 중요한 날이에요.","따뜻한 차 한 잔으로 긴장 풀기"],study:[65,"기존 계획을 다시 점검해보세요.","학습 계획 재정비 추천"]},
+  4:{love:[75,"균형 잡힌 대화로 관계를 다져보세요.","오늘 솔직한 대화를 시도해보세요"],money:[78,"수입·지출을 점검하기 좋은 날이에요.","가계부 정리 추천"],health:[78,"규칙적인 식사와 수면을 지켜보세요.","균형 잡힌 식단 챙기기"],study:[85,"정직하게 준비한 만큼 결과가 나옵니다.","오늘 실력 점검 테스트 추천"]},
+  5:{love:[70,"먼저 다가가면 좋은 결과가 있어요.","오늘 용감하게 고백해보세요"],money:[82,"목표 금액을 향해 달려가세요.","재테크 계획 세우기 추천"],health:[85,"오늘은 운동 퍼포먼스가 최고예요.","PT나 운동 모임 참가 추천"],study:[88,"집중력이 폭발하는 날입니다.","중요 과목 집중 공략 추천"]},
+  6:{love:[90,"사랑하는 사람에게 따뜻함을 전해보세요.","오늘 소중한 사람과 식사 추천"],money:[83,"좋은 기회가 찾아올 수 있는 날이에요.","장학금·지원금 공고 확인"],health:[87,"꽃이나 식물과 함께하면 컨디션이 올라요.","캠퍼스 산책으로 기분 전환"],study:[75,"창의적인 발표 준비에 딱 좋은 날이에요.","디자인·기획 과제 집중 추천"]},
+  7:{love:[68,"오늘은 나 자신을 먼저 챙겨보세요.","자기 자신과의 데이트 추천"],money:[82,"안정적인 계획을 세우기 좋은 날이에요.","중장기 재정 계획 수립 추천"],health:[75,"규칙적인 루틴이 몸을 지킵니다.","규칙적인 기상 시간 지키기"],study:[90,"리더십을 발휘할 기회가 있어요.","스터디 그룹 리더 역할 도전"]},
+  8:{love:[78,"운명 같은 인연이 기다릴 수 있어요.","오늘 새로운 모임에 참여해보세요"],money:[72,"작은 행운이 찾아오는 날이에요.","로또보다 장학금 신청이 우선!"],health:[78,"몸의 변화에 귀 기울여보세요.","건강검진 예약 추천"],study:[80,"예상치 못한 기회를 포착하세요.","RISE 프로그램 공지 확인 추천"]},
+  9:{love:[80,"인내심을 갖고 기다리면 보상이 와요.","오늘은 먼저 듣는 역할을 해보세요"],money:[70,"꾸준함이 재정을 만듭니다.","소액 적금 시작 추천"],health:[85,"부드러운 요가나 스트레칭이 좋아요.","RISE 건강 프로그램 참여 추천"],study:[83,"포기하지 않으면 반드시 결과가 나와요.","꾸준한 복습이 가장 강한 무기"]},
+  10:{love:[60,"오늘은 혼자의 시간을 즐겨보세요.","책 한 권으로 감성을 채워보세요"],money:[68,"절약이 지혜인 날이에요.","불필요한 구독 서비스 정리 추천"],health:[80,"명상이나 산책으로 머릿속을 비워보세요.","캠퍼스 조용한 공간 찾아보기"],study:[78,"혼자 깊이 공부하기 딱 좋은 날이에요.","논문·자료 탐색 집중 추천"]},
+  11:{love:[62,"새로운 인연을 위해 준비해보세요.","프로필 사진 업데이트 추천"],money:[65,"불필요한 습관을 끊어낼 타이밍이에요.","지출 패턴 분석 추천"],health:[72,"나쁜 생활 습관 하나를 바꿔보세요.","오늘부터 금연·절주 도전"],study:[70,"새로운 공부 방법을 시도해보세요.","러닝메이트 찾기 추천"]},
+  12:{love:[77,"진심이 담긴 사과나 감사를 전해보세요.","오래된 관계를 회복해보세요"],money:[75,"새로운 재정 계획을 세워보세요.","가계부 앱 새로 시작 추천"],health:[80,"오늘부터 새 건강 루틴을 시작해보세요.","아침 운동 루틴 만들기 추천"],study:[82,"중요한 결정을 내릴 때입니다.","전공 선택·대학원 진학 상담 추천"]},
+  13:{love:[88,"완벽한 하모니가 느껴지는 날이에요.","오늘 소중한 사람과 특별한 시간을"],money:[85,"노력이 결실을 맺는 시기예요.","장학금·수당 확인 및 신청 추천"],health:[90,"지금의 좋은 습관을 유지하세요.","운동 루틴 기록 앱 활용 추천"],study:[92,"목표 달성이 눈앞에 있어요!","최종 마무리 점검 집중 추천"]},
+  14:{love:[76,"두려움 없이 먼저 다가가보세요.","오늘 새로운 동아리 문을 두드려보세요"],money:[62,"충동적인 결정은 잠시 보류하세요.","구매 전 하루 더 생각해보기"],health:[82,"새로운 운동을 시작하기 좋아요.","헬스장·클라이밍 입문 추천"],study:[73,"신선한 시각으로 문제를 바라보세요.","색다른 공부 장소 탐방 추천"]},
+  15:{love:[79,"말하지 않아도 통하는 날이에요.","오늘은 눈빛으로 마음을 전해보세요"],money:[73,"직관적인 판단보다 데이터를 믿으세요.","수입·지출 스프레드시트 정리"],health:[84,"명상과 요가가 잘 맞는 날이에요.","RISE 웰니스 프로그램 확인"],study:[77,"첫 번째 직관을 믿어보세요.","어려운 문제는 일단 건너뛰고 전체 파악 먼저"]}
+};
+
+function renderResult(){
+  const t=pickedTarot, r=pickedRise;
+  const ft=FORTUNE_TILES[t.id]||FORTUNE_TILES[0];
+
+  // 날짜·나이 계산
+  const today=new Date();
+  const y=parseInt(document.getElementById('selYear').value);
+  const m=parseInt(document.getElementById('selMonth').value);
+  const d=parseInt(document.getElementById('selDay').value);
+  let age=today.getFullYear()-y;
+  if(today.getMonth()+1<m||(today.getMonth()+1===m&&today.getDate()<d)) age--;
+  const dateStr=`${today.getFullYear()}년 ${today.getMonth()+1}월 ${today.getDate()}일`;
+
+  // 헤더
+  document.getElementById('resHeaderIcon').textContent=r.icon;
+  document.getElementById('resHeaderTitle').textContent=r.typeKo+' — '+r.type;
+  document.getElementById('resHeaderMeta').textContent=dateStr+' · '+age+'세 오늘의 운세';
+
+  // TODAY'S MESSAGE: combined 해석 활용
+  const vibe=t.vibe;
+  const cmap=r.combined;
+  const combinedMsg=cmap[vibe]||cmap['default'];
+  document.getElementById('todayMsgText').textContent=combinedMsg;
+  document.getElementById('todayMsgCta').textContent='RISE '+r.typeKo+'탐방 · '+r.name+' 신청 추천!';
+
+  // 운세 타일
+  const tiles=[
+    {key:'love',scoreId:'scoreLove',barId:'barLove',descId:'descLove',tipId:'tipLove'},
+    {key:'money',scoreId:'scoreMoney',barId:'barMoney',descId:'descMoney',tipId:'tipMoney'},
+    {key:'health',scoreId:'scoreHealth',barId:'barHealth',descId:'descHealth',tipId:'tipHealth'},
+    {key:'study',scoreId:'scoreStudy',barId:'barStudy',descId:'descStudy',tipId:'tipStudy'}
+  ];
+  tiles.forEach(({key,scoreId,barId,descId,tipId})=>{
+    const[pct,desc,tip]=ft[key];
+    document.getElementById(scoreId).textContent=pct;
+    document.getElementById(descId).textContent=desc;
+    document.getElementById(tipId).textContent=tip;
+  });
+
+  // RISE 결과
+  document.getElementById('riseResultTitle').textContent=r.typeKo+' — '+r.name;
+  document.getElementById('riseResultSub').textContent=r.desc;
+  document.getElementById('riseBulletsNew').innerHTML=r.bullets.map(b=>`<div class="rise-bullet">${b}</div>`).join('');
+
+  // 종합 해석
+  document.getElementById('combinedText').textContent=t.overall+' '+combinedMsg;
+
+  // 해시태그
+  const tags=['#'+r.name,'#'+r.typeKo,'#RISE협약기업','#'+t.ko,'#조선대RISE'];
+  document.getElementById('hashtagRow').innerHTML=tags.map(tag=>`<span class="hashtag">${tag}</span>`).join('');
+
+  // 모토
+  document.getElementById('riseMotto').textContent=r.motto;
+
+  // 바 애니메이션
+  setTimeout(()=>{
+    tiles.forEach(({key,barId})=>{
+      document.getElementById(barId).style.width=ft[key][0]+'%';
+    });
+  },200);
+}
+
+function back(to){
+  if(to===1){hide('s2');show('s1');setStep(1);pickedTarot=null;document.getElementById('btnT').style.display='none';}
+  else if(to===2){hide('s3');show('s2');setStep(2);pickedRise=null;document.getElementById('btnR').style.display='none';}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function resetAll(){
+  // 모든 섹션 완전 초기화
+  ['s2','s3','s4'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.style.display='none';
+    el.classList.remove('active');
+  });
+  document.getElementById('loading').classList.remove('active');
+
+  // 결과 내부 콘텐츠 초기화 (다음 렌더링이 꼬이지 않도록)
+  // 결과 내용 초기화
+  ['riseBulletsNew','hashtagRow'].forEach(id=>{ const el=document.getElementById(id); if(el) el.innerHTML=''; });
+  ['combinedText','todayMsgText','todayMsgCta','riseResultTitle','riseResultSub','resHeaderTitle','resHeaderMeta'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=''; });
+  // 바 초기화
+  ['barLove','barMoney','barHealth','barStudy'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.width='0%'; });
+
+  // 카드 그리드 초기화
+  document.getElementById('tarotGrid').innerHTML='';
+  document.getElementById('riseGrid').innerHTML='';
+
+  // 버튼 초기화
+  document.getElementById('btnT').style.display='none';
+  document.getElementById('btnR').style.display='none';
+
+  // 입력값 초기화
+  document.getElementById('selYear').value='';
+  document.getElementById('selMonth').value='';
+  document.getElementById('selDay').value='';
+  document.getElementById('inputError').style.display='none';
+
+  pickedTarot=null;
+  pickedRise=null;
+
+  document.getElementById('s1').style.display='block';
+  setStep(1);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function show(id){document.getElementById(id).style.display='block';}
+function hide(id){document.getElementById(id).style.display='none';}
+</script>
+</body>
+</html>
