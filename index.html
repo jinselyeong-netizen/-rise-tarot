@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🔮 RISE의 신묘한 타로상점</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&family=Cinzel:wght@400;600&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 :root{
   --bg:#0a0814;--surface:#12102a;--surface2:#1a1640;
@@ -149,6 +150,26 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .rise-motto{border:1px solid var(--pborder2);border-radius:var(--radius);padding:1.25rem;text-align:center;margin-bottom:1.5rem;background:linear-gradient(135deg,rgba(124,92,207,.08),rgba(124,92,207,.02));}
 .rise-motto-text{font-family:'Noto Serif KR',serif;font-size:16px;font-weight:600;color:var(--purple2);letter-spacing:.04em;line-height:1.6;}
 .rise-motto-sub{font-size:11px;color:var(--text-muted);letter-spacing:.1em;margin-top:6px;}
+/* 액션 버튼 섹션 */
+.action-section{display:flex;gap:10px;margin-bottom:1.5rem;}
+.btn-action{flex:1;padding:13px 10px;border:none;border-radius:12px;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:transform .15s,box-shadow .15s;letter-spacing:.04em;}
+.btn-pdf{background:linear-gradient(135deg,#8b6914,#d4a843,#f0cc7a,#d4a843);color:#0a0814;box-shadow:0 4px 20px rgba(212,168,67,.4);}
+.btn-pdf:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(212,168,67,.6);}
+.btn-email{background:linear-gradient(135deg,#4a3399,#7c5ccf,#c9a8f5,#7c5ccf);color:#fff;box-shadow:0 4px 20px rgba(124,92,207,.4);}
+.btn-email:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(124,92,207,.6);}
+.qr-section{background:var(--surface);border:1px solid var(--pborder);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1rem;text-align:center;}
+.qr-title{font-family:'Noto Serif KR',serif;font-size:13px;color:var(--purple2);margin-bottom:.4rem;}
+.qr-hint{font-size:11px;color:var(--text-muted);margin-bottom:1rem;line-height:1.6;}
+.qr-box{display:inline-block;background:#fff;padding:8px;border-radius:10px;margin-bottom:.6rem;}
+.qr-url{font-size:10px;color:var(--text-muted);word-break:break-all;letter-spacing:.02em;}
+@media print{
+  body{background:#fff !important;}
+  body::before{display:none;}
+  .stars,.step-wrap,.header,.action-section,.btn-ghost{display:none !important;}
+  .container{max-width:100%;padding:1rem;}
+  .result-sec{display:block !important;}
+  .res-header,.today-msg-box,.fortune-grid,.rise-result-box,.combined-box,.hashtag-row,.rise-motto{background:#1a103a !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+}
 
 .footer{text-align:center;margin-top:2.5rem;font-size:11px;color:rgba(212,168,67,.3);letter-spacing:.1em;}
 </style>
@@ -301,6 +322,18 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div class="rise-motto-sub">RISE · 조선대학교 RISE사업단</div>
     </div>
 
+    <div class="qr-section">
+      <div class="qr-title">📱 내 결과 QR코드</div>
+      <div class="qr-hint">스캔하면 집에서도 오늘의 결과를 다시 볼 수 있어요</div>
+      <div class="qr-box" id="qrcode"></div>
+      <div class="qr-url" id="qrUrl"></div>
+    </div>
+
+    <div class="action-section">
+      <button class="btn-action btn-pdf" onclick="savePDF()">📄 PDF로 저장</button>
+      <button class="btn-action btn-email" onclick="sendEmail()">✉️ 이메일로 보내기</button>
+    </div>
+
     <button class="btn-ghost" onclick="resetAll()">↩ 처음으로</button>
   </div>
 
@@ -404,6 +437,25 @@ const AREAS=[
 ];
 
 let pickedTarot=null, pickedRise=null;
+
+// QR 스캔 시 결과 복원
+(function(){
+  const p = new URLSearchParams(window.location.search);
+  const tid = p.get('t'), rid = p.get('r');
+  if(tid !== null && rid !== null){
+    const tCard = TAROT[parseInt(tid)], rCard = RISE[parseInt(rid)];
+    if(tCard && rCard){
+      pickedTarot = tCard; pickedRise = rCard;
+      window.addEventListener('DOMContentLoaded', function(){
+        document.getElementById('s1').style.display='none';
+        document.querySelector('.step-wrap').style.display='none';
+        const rs = document.getElementById('s4');
+        rs.style.display='block'; rs.classList.add('active');
+        renderResult();
+      });
+    }
+  }
+})();
 
 // Stars
 (function(){
@@ -584,6 +636,9 @@ function renderResult(){
       document.getElementById(barId).style.width=ft[key][0]+'%';
     });
   },200);
+
+  // QR 생성
+  setTimeout(()=>{ generateQR(t, r); }, 400);
 }
 
 function back(to){
@@ -603,7 +658,8 @@ function resetAll(){
 
   // 결과 내부 콘텐츠 초기화 (다음 렌더링이 꼬이지 않도록)
   // 결과 내용 초기화
-  ['riseBulletsNew','hashtagRow'].forEach(id=>{ const el=document.getElementById(id); if(el) el.innerHTML=''; });
+  ['riseBulletsNew','hashtagRow','qrcode'].forEach(id=>{ const el=document.getElementById(id); if(el) el.innerHTML=''; });
+  const qu=document.getElementById('qrUrl'); if(qu) qu.textContent='';
   ['combinedText','todayMsgText','todayMsgCta','riseResultTitle','riseResultSub','resHeaderTitle','resHeaderMeta'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=''; });
   // 바 초기화
   ['barLove','barMoney','barHealth','barStudy'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.width='0%'; });
@@ -632,6 +688,40 @@ function resetAll(){
 
 function show(id){document.getElementById(id).style.display='block';}
 function hide(id){document.getElementById(id).style.display='none';}
+
+function generateQR(t, r){
+  const qrEl = document.getElementById('qrcode');
+  if(!qrEl) return;
+  qrEl.innerHTML = '';
+  const qrUrl = 'https://jinselyeong-netizen.github.io/-rise-tarot/?t='+t.id+'&r='+r.id;
+  document.getElementById('qrUrl').textContent = qrUrl;
+  try {
+    new QRCode(qrEl, {text:qrUrl, width:160, height:160, colorDark:'#000000', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.M});
+  } catch(e) { qrEl.innerHTML = '<p style="font-size:11px;color:#999;padding:8px;">QR 생성 실패</p>'; }
+}
+
+function savePDF(){
+  window.print();
+}
+
+function sendEmail(){
+  const t = pickedTarot, r = pickedRise;
+  if(!t || !r) return;
+  const today = new Date();
+  const dateStr = today.getFullYear()+'년 '+(today.getMonth()+1)+'월 '+today.getDate()+'일';
+  const subject = encodeURIComponent('[RISE 타로] '+dateStr+' '+r.typeKo+' — '+r.name+' 운세 결과');
+  const body = encodeURIComponent(
+    '안녕하세요! RISE의 신묘한 타로상점에서 오늘의 운세를 뽑았어요 🔮\n\n' +
+    '📅 날짜: ' + dateStr + '\n' +
+    '🌙 타로 카드: ' + t.name + ' (' + t.ko + ')\n' +
+    '✨ RISE 카드: ' + r.typeKo + ' — ' + r.name + '\n\n' +
+    '[ 오늘의 운세 ]\n' + t.overall + '\n\n' +
+    '[ RISE 흐름 ]\n' + r.bullets.join('\n') + '\n\n' +
+    '[ RISE와 함께 ]\n' + r.motto + '\n\n' +
+    '— RISE · 조선대학교 RISE사업단'
+  );
+  window.location.href = 'mailto:?subject='+subject+'&body='+body;
+}
 </script>
 </body>
 </html>
